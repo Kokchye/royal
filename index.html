@@ -5,24 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Royal - Gestão</title>
+    <meta name="apple-mobile-web-app-title" content="Tabacaria">
+    <title>Tabacaria Elite</title>
     <style>
         :root { --white: #ffffff; --bg: #000000; --card: #1c1c1e; --text: #ffffff; --blue: #0a84ff; --green: #30d158; --red: #ff453a; --border: #2c2c2e; }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); color: var(--text); margin: 0; padding: 20px 15px 40px;
-            -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+        * { 
+            /* Desativa o zoom de duplo clique e melhora a resposta ao toque */
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent;
         }
 
-        @keyframes modalUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); color: var(--text); margin: 0; padding: 20px 15px 100px;
+            overflow-x: hidden;
+        }
 
-        .logo-container { width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%; border: 1px solid var(--white); overflow: hidden; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        /* Banner de Instalação (Instrução iOS) */
+        #ios-prompt {
+            display: none; position: fixed; bottom: 20px; left: 15px; right: 15px;
+            background: rgba(44, 44, 46, 0.95); backdrop-filter: blur(10px);
+            padding: 15px; border-radius: 15px; z-index: 999; border: 1px solid #3a3a3c;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .logo-container { width: 70px; height: 70px; margin: 0 auto 15px; border-radius: 50%; border: 1px solid var(--white); overflow: hidden; }
         .logo-container img { width: 100%; height: 100%; object-fit: cover; }
 
         .tabs { display: flex; background: #1c1c1e; padding: 4px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; color: #8e8e93; background: transparent; transition: 0.3s; }
+        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; color: #8e8e93; background: transparent; }
         .tab.active-blue { background: #2c2c2e; color: var(--blue); }
         .tab.active-green { background: #2c2c2e; color: var(--green); }
 
@@ -33,22 +45,12 @@
             width: 100%; box-sizing: border-box; font-size: 16px; margin-bottom: 10px; outline: none;
         }
 
-        .comanda-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 18px; background: #1c1c1e; margin-bottom: 12px; border-radius: 16px; 
-            border: 1px solid var(--border); animation: fadeIn 0.3s ease;
-        }
-        .comanda-item:active { transform: scale(0.98); background: #2c2c2e; }
+        .comanda-item { display: flex; justify-content: space-between; align-items: center; padding: 18px; background: #1c1c1e; margin-bottom: 12px; border-radius: 16px; border: 1px solid var(--border); }
 
-        .modal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100; 
-        }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 100; }
         .modal-content {
-            position: absolute; bottom: 0; left: 0; right: 0; 
-            background: #1c1c1e; border-radius: 25px 25px 0 0; 
+            position: absolute; bottom: 0; left: 0; right: 0; background: #1c1c1e; border-radius: 25px 25px 0 0; 
             padding: 25px; padding-bottom: env(safe-area-inset-bottom);
-            animation: modalUp 0.4s cubic-bezier(0.15, 1, 0.3, 1);
             max-height: 92vh; overflow-y: auto;
         }
 
@@ -57,103 +59,106 @@
         .btn-pay { background: var(--green); color: white; }
         .btn-wa { background: #25d366; color: white; margin-top: 20px; }
         
-        .linha-produto { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
         .qtd-box { display: flex; align-items: center; background: #2c2c2e; border-radius: 12px; padding: 4px 10px; border: 1px solid #3a3a3c; }
-        .btn-mini { background: none; border: none; color: var(--blue); font-size: 24px; padding: 0 10px; cursor: pointer; }
+        .btn-mini { background: none; border: none; color: var(--blue); font-size: 24px; padding: 0 10px; }
 
-        .total-display { font-size: 42px; font-weight: 800; text-align: center; margin: 25px 0; color: var(--white); letter-spacing: -1px; }
-        .info-label { font-size: 11px; color: #8e8e93; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px; display: block; font-weight: 700; }
+        .total-display { font-size: 42px; font-weight: 800; text-align: center; margin: 25px 0; color: var(--white); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+<div id="ios-prompt">
+    <div style="display:flex; align-items:center; gap:12px;">
+        <div style="font-size:30px;">📲</div>
+        <div style="font-size:13px; color:white;">
+            Para salvar como APP: clique em <img src="https://img.icons8.com/ios/50/ffffff/share-rounded.png" width="16" style="vertical-align:middle"> <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.
+        </div>
+        <button onclick="document.getElementById('ios-prompt').style.display='none'" style="background:none; border:none; color:var(--blue); font-weight:bold;">OK</button>
+    </div>
+</div>
+
 <div class="container">
     <div style="text-align:center;">
-        <div class="logo-container">
-            <img src="https://i.imgur.com/f2q9QgG.jpeg" alt="Logo">
-        </div>
-        <h2 style="font-weight: 800; font-size: 22px; margin: 0 0 5px;">Royal</h2>
-        <p style="color: #8e8e93; font-size: 12px; margin: 0 0 25px; letter-spacing: 2px;">SISTEMA DE GESTÃO</p>
+        <div class="logo-container"><img src="https://i.imgur.com/f2q9QgG.jpeg"></div>
+        <h2 style="margin: 0;">TABACARIA ELITE</h2>
     </div>
 
-    <div class="tabs">
-        <button id="tabAbertos" class="tab active-blue" onclick="mudarAba('aberto')">EM ABERTO</button>
+    <div class="tabs" style="margin-top:20px">
+        <button id="tabAbertos" class="tab active-blue" onclick="mudarAba('aberto')">ABERTAS</button>
         <button id="tabPagos" class="tab" onclick="mudarAba('pago')">HISTÓRICO</button>
     </div>
 
     <div id="areaNovo">
-        <input type="text" id="novoCliente" placeholder="Nome do Cliente ou Mesa" autocomplete="off">
-        <button class="btn btn-primary" onclick="novaFicha()">+ ABRIR NOVA FICHA</button>
+        <input type="text" id="novoCliente" placeholder="Nome do Cliente / Mesa" autocomplete="off">
+        <button class="btn btn-primary" onclick="novaFicha()">+ ABRIR COMANDA</button>
     </div>
 
     <div id="listaComandas"></div>
-    
-    <div id="btnZerar" style="display:none; text-align:center; margin-top: 20px;">
-        <button onclick="limparTudo()" style="background:none; border:none; color:var(--red); font-size:12px; text-decoration:underline;">Zerar todo o histórico</button>
-    </div>
 </div>
 
 <div id="modalFicha" class="modal">
     <div class="modal-content">
-        <div style="width: 45px; height: 5px; background: #3a3a3c; margin: 0 auto 25px; border-radius: 10px;"></div>
+        <div style="width: 45px; height: 5px; background: #3a3a3c; margin: 0 auto 20px; border-radius: 10px;"></div>
+        <h2 id="viewNome" style="text-align: center; margin: 0;"></h2>
+        <p id="viewHoraAbertura" style="text-align: center; color: #8e8e93; font-size: 14px;"></p>
         
-        <h2 id="viewNome" style="text-align: center; margin: 0; font-size: 26px; font-weight: 800;"></h2>
-        <p id="viewHoraAbertura" style="text-align: center; font-size: 14px; color: #8e8e93; margin: 8px 0 25px;"></p>
-        
-        <span class="info-label">Consumo de Rosh</span>
-        <div class="card" style="background: #2c2c2e; margin-bottom: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600;">💨 Rosh (R$ 15,00)</span>
-                <div class="qtd-box">
-                    <button class="btn-mini" onclick="alterarRosh(-1)">-</button>
-                    <span id="qtdRosh" style="width:30px; text-align:center; font-weight: 800; font-size: 18px;">0</span>
-                    <button class="btn-mini" onclick="alterarRosh(1)">+</button>
-                </div>
+        <div class="card" style="background: #2c2c2e; display:flex; justify-content:space-between; align-items:center;">
+            <span>💨 Rosh (R$ 15,00)</span>
+            <div class="qtd-box">
+                <button class="btn-mini" onclick="alterarRosh(-1)">-</button>
+                <span id="qtdRosh" style="width:30px; text-align:center; font-weight:800;">0</span>
+                <button class="btn-mini" onclick="alterarRosh(1)">+</button>
             </div>
         </div>
 
-        <span class="info-label">Outros Itens</span>
         <div id="containerItens"></div>
-        <button class="btn" style="background: #2c2c2e; color: var(--blue); font-size: 14px; border: 1px dashed var(--blue);" onclick="adicionarLinhaProduto()">+ ADICIONAR PRODUTO</button>
+        <button class="btn" style="background:#2c2c2e; color:var(--blue); border:1px dashed var(--blue);" onclick="adicionarLinhaProduto()">+ ADICIONAR ITEM</button>
 
         <div class="total-display" id="totalGeral">R$ 0,00</div>
 
         <div id="botoesAberto">
-            <span class="info-label">Meio de Pagamento</span>
             <select id="formaPagamento">
                 <option value="Pix">Pix</option>
                 <option value="Dinheiro">Dinheiro</option>
                 <option value="Cartão">Cartão</option>
             </select>
-            <button class="btn btn-primary" onclick="salvarDados()">SALVAR ALTERAÇÕES</button>
-            <button class="btn btn-pay" onclick="confirmarPagamento()">CONCLUIR E PAGAR</button>
-        </div>
-        
-        <div id="infoPago" style="display:none; text-align: center; padding: 20px; border: 2px solid var(--green); border-radius: 18px; margin-bottom: 15px; background: rgba(48, 209, 88, 0.1);">
-            <span style="color: var(--green); font-weight: 800; font-size: 20px;">PAGO VIA <span id="viewMeioPagamento"></span></span>
+            <button class="btn btn-primary" onclick="salvarDados()">SALVAR</button>
+            <button class="btn btn-pay" onclick="confirmarPagamento()">FECHAR E PAGAR</button>
         </div>
 
-        <button class="btn btn-wa" id="btnWhats" onclick="compartilharZap()">ENVIAR COMPROVANTE (WHATSAPP)</button>
-        <button class="btn" style="background: transparent; color: #8e8e93; margin-top: 15px;" onclick="fecharModal()">VOLTAR</button>
-        <button class="btn" style="color: var(--red); font-size: 12px; margin-top: 40px; background:none;" onclick="excluirFicha()">EXCLUIR ESTE REGISTRO</button>
+        <div id="infoPago" style="display:none; text-align:center; padding:15px; border:2px solid var(--green); border-radius:15px; color:var(--green); font-weight:bold;">
+            PAGO NO <span id="viewMeioPagamento"></span>
+        </div>
+
+        <button class="btn btn-wa" id="btnWhats" onclick="compartilharZap()">ENVIAR WHATSAPP</button>
+        <button class="btn" style="background:transparent; color:#8e8e93;" onclick="fecharModal()">VOLTAR</button>
+        <button class="btn" style="color:var(--red); font-size:12px; margin-top:30px; background:none;" onclick="excluirFicha()">EXCLUIR REGISTRO</button>
     </div>
 </div>
 
 <script>
-    let comandas = JSON.parse(localStorage.getItem('tabacaria_final_v1')) || [];
+    let comandas = JSON.parse(localStorage.getItem('tabacaria_v10')) || [];
     let abaAtual = 'aberto';
     let indexAtivo = null;
+
+    // Detectar iPhone para mostrar o aviso de "Salvar na Tela Inicial"
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+    const inStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+    if (isIos() && !inStandaloneMode()) {
+        document.getElementById('ios-prompt').style.display = 'block';
+    }
 
     function novaFicha() {
         const nome = document.getElementById('novoCliente').value;
         if(!nome) return;
-        const agora = new Date();
-        const hora = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
-        
-        comandas.unshift({ 
-            nome: nome, roshs: 0, produtos: [], status: 'aberto', total: 0, 
-            abertura: hora, metodo: '' 
-        });
+        const hora = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        comandas.unshift({ nome, roshs: 0, produtos: [], status: 'aberto', total: 0, abertura: hora, metodo: '' });
         document.getElementById('novoCliente').value = '';
         salvarEAtualizar();
     }
@@ -163,7 +168,6 @@
         document.getElementById('tabAbertos').className = status === 'aberto' ? 'tab active-blue' : 'tab';
         document.getElementById('tabPagos').className = status === 'pago' ? 'tab active-green' : 'tab';
         document.getElementById('areaNovo').style.display = status === 'aberto' ? 'block' : 'none';
-        document.getElementById('btnZerar').style.display = status === 'pago' ? 'block' : 'none';
         renderLista();
     }
 
@@ -180,7 +184,6 @@
         document.getElementById('botoesAberto').style.display = isAberto ? 'block' : 'none';
         document.getElementById('infoPago').style.display = isAberto ? 'none' : 'block';
         document.getElementById('btnWhats').style.display = isAberto ? 'none' : 'block';
-        
         if(!isAberto) document.getElementById('viewMeioPagamento').innerText = c.metodo.toUpperCase();
         
         document.getElementById('modalFicha').style.display = 'block';
@@ -190,14 +193,11 @@
     function adicionarLinhaProduto(qtd = 1, nome = '', preco = '') {
         const div = document.createElement('div');
         div.className = 'linha-produto';
+        div.style.display = "flex"; div.style.gap = "8px"; div.style.marginBottom = "10px";
         div.innerHTML = `
-            <div class="qtd-box">
-                <button class="btn-mini" onclick="modQtd(this,-1)">-</button>
-                <span class="num-qtd" style="width:25px; text-align:center; font-weight:700">${qtd}</span>
-                <button class="btn-mini" onclick="modQtd(this,1)">+</button>
-            </div>
+            <div class="qtd-box"><button class="btn-mini" onclick="modQtd(this,-1)">-</button><span class="num-qtd" style="width:20px;text-align:center">${qtd}</span><button class="btn-mini" onclick="modQtd(this,1)">+</button></div>
             <input type="text" placeholder="Item" value="${nome}" style="flex:2; margin:0">
-            <input type="number" placeholder="R$" value="${preco}" style="width:85px; margin:0">
+            <input type="number" placeholder="R$" value="${preco}" style="width:80px; margin:0">
         `;
         document.getElementById('containerItens').appendChild(div);
         div.querySelectorAll('input').forEach(i => i.addEventListener('input', calcularTotal));
@@ -235,12 +235,12 @@
             if(inputs[0].value) c.produtos.push({qtd: parseInt(l.querySelector('.num-qtd').innerText), nome: inputs[0].value, preco: parseFloat(inputs[1].value) || 0});
         });
         salvarEAtualizar();
-        if(abaAtual === 'aberto') fecharModal();
+        fecharModal();
     }
 
     function confirmarPagamento() {
         const metodo = document.getElementById('formaPagamento').value;
-        if(confirm(`Finalizar conta no ${metodo}?`)) {
+        if(confirm(`Fechar no ${metodo}?`)) {
             comandas[indexAtivo].status = 'pago';
             comandas[indexAtivo].metodo = metodo;
             salvarDados();
@@ -250,26 +250,15 @@
 
     function compartilharZap() {
         const c = comandas[indexAtivo];
-        let msg = `*RESUMO DA CONTA*%0A---------------------------%0A`;
-        msg += `*Cliente:* ${c.nome}%0A`;
-        if(c.roshs > 0) msg += ` ${c.roshs}x Rosh: R$ ${c.roshs * 15},00%0A`;
-        c.produtos.forEach(p => {
-            msg += `• ${p.qtd}x ${p.nome}: R$ ${(p.qtd * p.preco).toFixed(2)}%0A`;
-        });
-        msg += `---------------------------%0A*TOTAL: R$ ${c.total.toFixed(2)}*%0A`;
-        msg += `Pagamento: ${c.metodo}`;
+        let msg = `*TABACARIA ELITE*%0A*Cliente:* ${c.nome}%0A`;
+        if(c.roshs > 0) msg += `• ${c.roshs}x Rosh: R$ ${c.roshs * 15}%0A`;
+        c.produtos.forEach(p => msg += `• ${p.qtd}x ${p.nome}: R$ ${p.qtd * p.preco}%0A`);
+        msg += `%0A*TOTAL: R$ ${c.total.toFixed(2)}*`;
         window.open(`https://wa.me/?text=${msg}`);
     }
 
-    function limparTudo() {
-        if(confirm("Isso apagará todo o histórico de pagos. Continuar?")) {
-            comandas = comandas.filter(c => c.status === 'aberto');
-            salvarEAtualizar();
-        }
-    }
-
     function excluirFicha() {
-        if(confirm("Remover permanentemente?")) {
+        if(confirm("Remover?")) {
             comandas.splice(indexAtivo, 1);
             salvarEAtualizar();
             fecharModal();
@@ -277,26 +266,19 @@
     }
 
     function salvarEAtualizar() {
-        localStorage.setItem('tabacaria_final_v1', JSON.stringify(comandas));
+        localStorage.setItem('tabacaria_v10', JSON.stringify(comandas));
         renderLista();
     }
 
     function renderLista() {
         const lista = document.getElementById('listaComandas');
         lista.innerHTML = '';
-        const filtradas = comandas.filter(c => c.status === abaAtual);
-        
-        filtradas.forEach((c) => {
+        comandas.filter(c => c.status === abaAtual).forEach((c) => {
             const realIndex = comandas.indexOf(c);
             lista.innerHTML += `
                 <div class="comanda-item" onclick="abrirFicha(${realIndex})">
-                    <div>
-                        <div style="font-weight:800; font-size:18px; letter-spacing:-0.5px">${c.nome}</div>
-                        <div style="color:#8e8e93; font-size:12px; margin-top:2px">${c.status === 'aberto' ? 'Início: ' + c.abertura : 'Pago via ' + c.metodo}</div>
-                    </div>
-                    <div style="font-weight:800; font-size:18px; color:${c.status === 'aberto' ? 'var(--blue)' : 'var(--green)'}">
-                        R$ ${c.total.toFixed(2)}
-                    </div>
+                    <div><b>${c.nome}</b><br><small style="color:#8e8e93">${c.status === 'aberto' ? c.abertura : 'Pago via ' + c.metodo}</small></div>
+                    <div style="font-weight:bold; color:${c.status === 'aberto' ? 'var(--blue)' : 'var(--green)'}">R$ ${c.total.toFixed(2)}</div>
                 </div>`;
         });
     }
