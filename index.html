@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tabacaria">
-    <title>Tabacaria Elite</title>
+    <title>Royal</title>
     <style>
         :root { --white: #ffffff; --bg: #000000; --card: #1c1c1e; --text: #ffffff; --blue: #0a84ff; --green: #30d158; --red: #ff453a; --border: #2c2c2e; }
         
@@ -82,7 +82,7 @@
 <div class="container">
     <div style="text-align:center;">
         <div class="logo-container"><img src="https://i.imgur.com/f2q9QgG.jpeg"></div>
-        <h2 style="margin: 0;">TABACARIA ELITE</h2>
+        <h2 style="margin: 0;">Royal</h2>
     </div>
 
     <div class="tabs" style="margin-top:20px">
@@ -250,7 +250,7 @@
 
     function compartilharZap() {
         const c = comandas[indexAtivo];
-        let msg = `*TABACARIA ELITE*%0A*Cliente:* ${c.nome}%0A`;
+        let msg = `*Royal*%0A*Cliente:* ${c.nome}%0A`;
         if(c.roshs > 0) msg += `• ${c.roshs}x Rosh: R$ ${c.roshs * 15}%0A`;
         c.produtos.forEach(p => msg += `• ${p.qtd}x ${p.nome}: R$ ${p.qtd * p.preco}%0A`);
         msg += `%0A*TOTAL: R$ ${c.total.toFixed(2)}*`;
